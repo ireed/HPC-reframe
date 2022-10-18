@@ -26,22 +26,27 @@ class PrintNodelist(rfm.RunOnlyRegressionTest):
    def nodelist_compile(self):
       self.executable = f"hostname | sort > {self.nodelist_file}"
       print("After compile stage: ")
+      print(self._job_nodelist)
       print(self.job.nodelist)
 
    @sanity_function
    def nodelist_sanity(self):
       print("Sanity stage: ")
       print(self._job_nodelist)
+      print(self.job.nodelist)
       return sn.assert_true(True,"fail")
+
 
    @run_after('run')
    def nodelist_run(self):
       print("Run stage: ")
       print(self._job_nodelist)
+      print(self.job.nodelist)
+
 
    @performance_function('%')
-   def assert_fs_usage(self):
+   def nodelist_performance(self):
       print("Performance stage: ")
       print(self._job_nodelist)
+      print(self.job.nodelist)
       return sn.assert_true(True,"fail")
-
