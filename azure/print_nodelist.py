@@ -47,7 +47,6 @@ class PrintNodelist(rfm.RunOnlyRegressionTest):
       print("\n\tRun stage: ")
       print(self._job_nodelist)
       print(self.job.nodelist)
-      print(self.stdout)
 
    @performance_function('%')
    def nodelist_performance(self):
