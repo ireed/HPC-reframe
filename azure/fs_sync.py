@@ -31,7 +31,6 @@ class FilesystemHomogeneity(rfm.RunOnlyRegressionTest):
       nodes = fp.read()
       node_list = nodes.split('\n')
       del node_list[len(node_list)-1]
-      #print(node_list)
       return node_list
 
 
@@ -49,11 +48,9 @@ class FilesystemHomogeneity(rfm.RunOnlyRegressionTest):
       #print(self.current_system)
       self.executable = f"hostname | sort > {self.nodelist_file}"
       self.readonly_files = [self.nodelist_file]
-      #print(self.job.nodelist)
 
    @sanity_function
    def assert_fs_mount(self):
-      #print(self._job_nodelist)
       return sn.assert_true(self.check_fs_mount(),"FS mount checks fail")
 
    @run_before('compile')
@@ -152,10 +149,3 @@ class FilesystemHomogeneity(rfm.RunOnlyRegressionTest):
       return True
 
 
-   @run_before('performance')
-   def fs_usage(self):
-      '''Check percent usage of filesystems.'''
-
-      self.assert_fs_usage('/boot/efi',1)
-      self.assert_fs_usage('/',90)
-      self.assert_fs_usage('/devXX',90)
