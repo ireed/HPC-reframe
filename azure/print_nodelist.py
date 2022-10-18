@@ -12,6 +12,7 @@ import reframe.utility.sanity as sn
 import reframe.utility.osext as osext
 import sys
 
+#ireed: this code demonstrates the bug when using job.nodelist on slurm, and offers alternative methods
 @rfm.simple_test
 class PrintNodelist(rfm.RunOnlyRegressionTest):
    descr = 'Testing the _job_nodelist feature'
