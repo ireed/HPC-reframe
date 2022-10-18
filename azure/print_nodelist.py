@@ -21,32 +21,41 @@ class PrintNodelist(rfm.RunOnlyRegressionTest):
    #store list of nodes in this file, because self.job.nodelist is unreliable
    nodelist_file ="reframe_nodelist.txt"
 
+   @run_before('compile')
+   def set_test_flags(self):
+      self.job.options = [
+         '--ntasks=4',
+         '--ntasks-per-node=1'
+         ]
 
    @run_after('compile')
    def nodelist_compile(self):
-      self.executable = f"hostname | sort > {self.nodelist_file}"
-      print("After compile stage: ")
+      self.executable = f"hostname | sort > {self.nodelist_file}\necho $SLURM_NODELIST"
+      print("\tCompile stage: ")
       print(self._job_nodelist)
       print(self.job.nodelist)
 
    @sanity_function
    def nodelist_sanity(self):
-      print("Sanity stage: ")
+      print("\n\tSanity stage: ")
       print(self._job_nodelist)
       print(self.job.nodelist)
       return sn.assert_true(True,"fail")
 
-
    @run_after('run')
    def nodelist_run(self):
-      print("Run stage: ")
+      print("\n\tRun stage: ")
       print(self._job_nodelist)
       print(self.job.nodelist)
-
+      print(self.stdout)
 
    @performance_function('%')
    def nodelist_performance(self):
-      print("Performance stage: ")
+      print("\n\tPerformance stage: ")
       print(self._job_nodelist)
       print(self.job.nodelist)
+      print("\tPerformance stage (using hostname|sort): ")
+      print(util.osext.run_command("cat "+str(self.stdout)).stdout)
+      print("\tPerformance stage (using $SLURM_NODELIST): ")
+      print(util.osext.run_command("cat "+str(self.nodelist_file)).stdout)
       return sn.assert_true(True,"fail")
