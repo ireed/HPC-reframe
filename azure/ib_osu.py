@@ -146,7 +146,6 @@ class OSUBenchmarkTestBase(rfm.RunOnlyRegressionTest):
 
    @sanity_function
    def validate_test(self):
-      #return sn.assert_found(r'^8', self.stdout)
       return sn.assert_eq(self.job.exitcode, 0)
 
 
@@ -184,8 +183,6 @@ class osu_bandwidth_test(OSUBenchmarkTestBase):
       bw = re.split(' +', bw[0])
       gbs = float(float(bw[1]) * 8 / 1000)
       gbs = float(f'{gbs:.2f}')
-      #print(gbs)
-      #return sn.extractsingle(r'^4194304\s+(\S+)', self.stdout, 1, float)
       return gbs
 
    @sanity_function
@@ -194,11 +191,10 @@ class osu_bandwidth_test(OSUBenchmarkTestBase):
       lower = float(float(self.ib_stat.IB_RATE) * .95)
       # 100% interconnect speed is not possible, so fail
       upper = float(float(self.ib_stat.IB_RATE) * .99)
-      #return sn.assert_found(r'^8', self.stdout)
       #ireed: todo - add nodename(s) to error message
       gbs = self.bandwidth()
-      #print(self.ib_stat.IB_RATE)
-      return sn.assert_bounded(gbs,lower,upper,'Bandwidth performance failed: {}Gb/s is outside of error margin for {} Gb/s connection.'.format(gbs,self.ib_stat.IB_RATE))
+      return sn.assert_bounded(gbs,lower,upper,
+         'Bandwidth performance failed: {}Gb/s is outside of error margin for {} Gb/s connection.'.format(gbs,self.ib_stat.IB_RATE))
 
 
 
