@@ -1,0 +1,20 @@
+
+Prototype scripts and various experiments for azure validation. Tests are stored and edited here until being worthy of migration to the official azure repo (https://github.com/Azure/woc-benchmarking).
+
+FS_SYNC
+- Check that all nodes have the same filesystems, and check that no FS has a usage quota that exceeds a predetermined value. 
+- First, the test sends '$> df' to each node to check the usage % of each FS dir. Any dir that exceeds a certain percent is reported in the error message. 
+- Next, the test uses the df outputs to determine which nodes do not have the same FS. Nodes are compared in a bi-directional ring formation (ex: node4 compares output to node3 and node5, node8 compares to node7 and node9, etc). Nodes that show a different FS list are reported in the error message. 
+
+
+IB_OSU
+- fetch_osu_benchmarks downloads the suite, then build_osu_benchmark configures and compiles the download. There is also the option to use the pre-installed OSU test at $HPCX_OSU_DIR instead of the download. 
+- IB_stat_test sends '$> ib_stat' to all nodes, then checks the output to determine if all nodes show an 'Active' state, all show the same ib_rate, and confirms the expected number of IB cards detected. The ib_rate and a list of allocated nodes are saved for use in the osu_bw test.
+- osu_bandwidth_test runs the osu_bw test on pairs of symmetric nodes (ex: for 100 nodes allocated, the test pairs are node0-node50, node1-node51, node2-node52, etc). The test uses the same nodes from IB_stat_test. Pairs are launched in parallel with mpiexec, and performance is validated against the ib_rate from the IB_stat test. All test pairs with perf outside of 95-99% ib_rate are reported in the error message.
+- osu_bandwidth_test_ring only runs if #nodes > 2. It is the same as osu_bandwidth_test, but nodes are paired as a ring for testing (ex: for 100 nodes allocated, test pairs are node0-node1, node2-node3, node4-node5, etc). The purpose of this test is to isolate an underperforming node from its pair in the pervious osu_bandwidth test, and to hopefully have different switch distribution for node pairs.
+- The tests are semi-ordered: fetch_osu_benchmark must run before build_osu benchmark, build_osu_benchmark must run before osu_bandwitdh_*, and IB_stat_test must run before osu_bandwidth_*. No other ordering is enforced
+
+IB_PERFTEST
+- IB_stat is the same test from the IB_OSU tests. It is used to validate the IB HW and save the ib_rate in preparation for the b/w test.
+- IBBWCheck performs uni-directional bandwidth tests using '$> ib_send_bw' from the Mellanox perftest suite. Nodes are paired symmetrically, with half (ex: all even indexes in the node list) being the listener nodes and the other half launched as sender nodes. After comparing the b/w output with the expected ib_rate, the nodes switch between sender and listener (i.e even index nodes are now senders).
+This test has flaws that make is unfit for formal azure testing. Due to the sender-receiver model of the perftests, some pairs can hang indefinitely, causing this tests to timeout or (worse) create orphan processes after test completion.
