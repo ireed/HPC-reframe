@@ -1,0 +1,3 @@
+The difference between this folder and the azure folder is general-purpose testing.
+
+Tests in this folder *should* be system-agnostic, more flexible, and working with or without VMs.
