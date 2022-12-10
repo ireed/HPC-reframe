@@ -1,0 +1,138 @@
+import reframe as rfm
+import reframe.utility.sanity as sn
+import inspect
+import reframe.core.config as cfg
+import pprint
+import reframe.utility.osext as osext
+import sys
+import reframe.utility as util
+import os
+import re
+import subprocess
+from reframe.core.backends import getlauncher
+
+#Author: Isayah Reed
+#
+#Purpose: Checks number of gpus on each node and runs DCGM level 1
+#
+
+@rfm.simple_test
+class start_dcgm(rfm.RunOnlyRegressionTest):
+   descr = 'Start DCGM service'
+   valid_systems = ['*']
+   # ireed: TODO add gpu environs
+   valid_prog_environs = ['*']
+   @run_before('run')
+   def prepare_run(self):
+      self.job.options = ['--time=01:00']
+      self.executable = 'sudo systemctl restart dcgm'
+      self.job.num_tasks_per_node = 1
+      self.job.exclusive_access = True
+   @sanity_function
+   def validate_test(self):
+      return sn.assert_eq(self.job.exitcode, 0)
+
+
+@rfm.simple_test
+class check_num_gpu(rfm.RunOnlyRegressionTest):
+   descr = 'Check number of GPUs and NvSwitches'
+   valid_systems = ['*']
+   valid_prog_environs = ['*']
+
+   @run_after('init')
+   def setup_deps(self):
+      self.depends_on('start_dcgm')
+
+   @run_after('compile')
+   def set_test_flags(self):
+      self.job.options = ['--time=01:00']
+
+   @run_before('run')
+   def prepare_run(self):
+      self.executable = 'dcgmi'
+      self.executable_opts = ['discovery', '-l']
+      self.job.num_tasks_per_node = 1
+      self.job.exclusive_access = True
+
+   def device_count(self,filename,dev):
+      with open(str(filename), mode='r') as fp:
+         data = fp.read()
+      #print(data)
+      data_list = data.split('\n')
+      count = [s for s in data_list if '{} found'.format(dev) in s]
+      count = count[0].split(' {} found.'.format(dev))
+      #print(count)
+      return int(count[0])
+
+   @sanity_function
+   def validate_test(self):
+       #ireed: TODO what is expected # gpus?
+      num_gpus = self.device_count(self.stdout,'GPUs')
+      num_nvlinks = self.device_count(self.stdout,'NvSwitches')
+      print('GPUs: {}   NvSwitches: {}'.format(num_gpus,num_nvlinks))
+      print('exit code: {}'.format(self.job.exitcode))
+      #sn.assert_eq(self.job.exitcode, 0, "Error GPU checks failed")
+      return True
+
+
+@rfm.simple_test
+class run_dcgmi(rfm.RunOnlyRegressionTest):
+   descr = 'DCGMI run level 1 test'
+   valid_systems = ['*']
+   valid_prog_environs = ['*']
+
+   @run_after('init')
+   def setup_deps(self):
+      self.depends_on('start_dcgm')
+
+   @run_after('compile')
+   def set_test_flags(self):
+      self.job.options = ['--time=02:00']
+
+   @run_before('run')
+   def prepare_run(self):
+      self.executable = 'dcgmi'
+      self.executable_opts = ['diag', '-r 1']
+      self.job.num_tasks_per_node = 1
+      self.job.exclusive_access = True
+
+   def check_errors(self,filename):
+      with open(str(filename), mode='r') as fp:
+         data = fp.read()
+      print(data)
+      data_list = data.split('\n')
+      count = [s for s in data_list if 'Fail' in s]
+      print(count)
+      if len(count) == 0:
+         print('No errors')
+         return True
+     #count = count[0].split(' | '.format(dev))
+
+
+   @sanity_function
+   def validate_test(self):
+      self.check_errors(self.stdout)
+      #sn.assert_eq(self.job.exitcode, 0, "Error GPU checks failed")
+      return True
+
+
+
+@rfm.simple_test
+class stop_dcgm(rfm.RunOnlyRegressionTest):
+   descr = 'Stop DCGM service'
+   valid_systems = ['*']
+   valid_prog_environs = ['*']
+
+   @run_after('init')
+   def setup_deps(self):
+      self.depends_on('run_dcgmi')
+   @run_before('run')
+   def prepare_run(self):
+      self.job.options = ['--time=01:00']
+      self.executable = 'sudo systemctl stop dcgm'
+      self.job.num_tasks_per_node = 1
+      self.job.exclusive_access = True
+   @sanity_function
+   def validate_test(self):
+      return sn.assert_eq(self.job.exitcode, 0)
+
