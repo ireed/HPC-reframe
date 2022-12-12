@@ -16,25 +16,38 @@ from reframe.core.backends import getlauncher
 #Purpose: Checks number of gpus on each node and runs DCGM level 1
 #
 
-@rfm.simple_test
-class start_dcgm(rfm.RunOnlyRegressionTest):
-   descr = 'Start DCGM service'
+class GpuCheckTestBase(rfm.RunOnlyRegressionTest):
+   '''Base class for GPU tests'''
+
    valid_systems = ['*']
-   # ireed: TODO add gpu environs
    valid_prog_environs = ['*']
-   @run_before('run')
-   def prepare_run(self):
-      self.job.options = ['--time=01:00']
-      self.executable = 'sudo systemctl restart dcgm'
-      self.job.num_tasks_per_node = 1
-      self.job.exclusive_access = True
+   #num_tasks = 2
+   num_tasks_per_node = 1
+   exclusive_access = True
+
    @sanity_function
    def validate_test(self):
       return sn.assert_eq(self.job.exitcode, 0)
 
 
 @rfm.simple_test
-class check_num_gpu(rfm.RunOnlyRegressionTest):
+class start_dcgm(GpuCheckTestBase):
+   descr = 'Start DCGM service'
+   valid_systems = ['*']
+   # ireed: TODO add gpu environs
+   valid_prog_environs = ['*']
+   @run_before('run')
+   def prepare_run(self):
+      self.job.launcher = getlauncher('mpiexec')()
+      self.job.options = ['--time=01:00']
+      self.executable = 'sudo systemctl restart dcgm'
+   @sanity_function
+   def validate_test(self):
+      return sn.assert_eq(self.job.exitcode, 0)
+
+
+@rfm.simple_test
+class check_num_gpu(GpuCheckTestBase):
    descr = 'Check number of GPUs and NvSwitches'
    valid_systems = ['*']
    valid_prog_environs = ['*']
@@ -49,6 +62,8 @@ class check_num_gpu(rfm.RunOnlyRegressionTest):
 
    @run_before('run')
    def prepare_run(self):
+      self.job.launcher = getlauncher('mpiexec')()
+      self.job.scheduler= getscheduler('slurm')()
       self.executable = 'dcgmi'
       self.executable_opts = ['discovery', '-l']
       self.job.num_tasks_per_node = 1
@@ -57,11 +72,11 @@ class check_num_gpu(rfm.RunOnlyRegressionTest):
    def device_count(self,filename,dev):
       with open(str(filename), mode='r') as fp:
          data = fp.read()
-      #print(data)
+      print(data)
       data_list = data.split('\n')
       count = [s for s in data_list if '{} found'.format(dev) in s]
       count = count[0].split(' {} found.'.format(dev))
-      #print(count)
+      print(count)
       return int(count[0])
 
    @sanity_function
@@ -76,7 +91,7 @@ class check_num_gpu(rfm.RunOnlyRegressionTest):
 
 
 @rfm.simple_test
-class run_dcgmi(rfm.RunOnlyRegressionTest):
+class run_dcgmi(GpuCheckTestBase):
    descr = 'DCGMI run level 1 test'
    valid_systems = ['*']
    valid_prog_environs = ['*']
@@ -91,12 +106,14 @@ class run_dcgmi(rfm.RunOnlyRegressionTest):
 
    @run_before('run')
    def prepare_run(self):
+      self.job.launcher = getlauncher('mpiexec')()
       self.executable = 'dcgmi'
       self.executable_opts = ['diag', '-r 1']
       self.job.num_tasks_per_node = 1
       self.job.exclusive_access = True
 
    def check_errors(self,filename):
+       #ireed: TODO check if file is empty
       with open(str(filename), mode='r') as fp:
          data = fp.read()
       print(data)
@@ -106,8 +123,7 @@ class run_dcgmi(rfm.RunOnlyRegressionTest):
       if len(count) == 0:
          print('No errors')
          return True
-     #count = count[0].split(' | '.format(dev))
-
+      #count = count[0].split(' | '.format(dev))
 
    @sanity_function
    def validate_test(self):
@@ -118,7 +134,7 @@ class run_dcgmi(rfm.RunOnlyRegressionTest):
 
 
 @rfm.simple_test
-class stop_dcgm(rfm.RunOnlyRegressionTest):
+class stop_dcgm(GpuCheckTestBase):
    descr = 'Stop DCGM service'
    valid_systems = ['*']
    valid_prog_environs = ['*']
@@ -128,6 +144,7 @@ class stop_dcgm(rfm.RunOnlyRegressionTest):
       self.depends_on('run_dcgmi')
    @run_before('run')
    def prepare_run(self):
+      self.job.launcher = getlauncher('mpiexec')()
       self.job.options = ['--time=01:00']
       self.executable = 'sudo systemctl stop dcgm'
       self.job.num_tasks_per_node = 1
@@ -135,4 +152,5 @@ class stop_dcgm(rfm.RunOnlyRegressionTest):
    @sanity_function
    def validate_test(self):
       return sn.assert_eq(self.job.exitcode, 0)
+
 
