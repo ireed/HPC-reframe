@@ -20,6 +20,8 @@ SSH into the [VM instance](https://learn.microsoft.com/en-us/azure/cyclecloud/qs
    $> git clone https://github.com/Azure/woc-benchmarking
 
 Start a new cycle cloud project:
+   $> cyclecloud initialize
+   
    $> cyclecloud project init cc-base
 
    $> cd woc-benchmarking/CycleCloudProjects/cc-base/templates
