@@ -1,4 +1,11 @@
 
+#Author: Isayah Reed
+#
+#Purpose: Experimental config file for Azure VMs
+#
+# 
+
+
 site_configuration = {
     'systems': [
         {
@@ -10,10 +17,11 @@ site_configuration = {
             'partitions': [
                 {
                     'name': 'hbv2',
+                    'descr': 'HB120rs_v2',
                     'scheduler': 'slurm',
                     'launcher': 'srun',
                     'max_jobs': 100,
-                    #ireed: not needed
+                    #ireed: this is actually not needed ... at the moment
                     'access': ['-p hbv2'],
                     'environs': ['gnu-azhpc'],
                     'prepare_cmds': ['source /etc/profile.d/modules.sh'],
@@ -22,15 +30,27 @@ site_configuration = {
                 },
                 {
                     'name': 'nca100v4',
+                    'descr': 'ncads_a100_v4',
                     'scheduler': 'slurm',
                     'launcher': 'srun',
                     'max_jobs': 100,
-                    #ireed: not needed
                     'access': ['-p nca100v4'],
                     'environs': ['gnu-azhpc'],
                     'prepare_cmds': ['source /etc/profile.d/modules.sh'],
                     'features': ['ib', 'gpu', 'cuda', 'mpi'],
                     'extras': {'vm_size': 'ncads_a100_v4', 'gpu_arch': 'a100' }
+                },
+                {
+                    'name': 'ndv2',
+                    'descr': 'ndrs_v2',
+                    'scheduler': 'slurm',
+                    'launcher': 'srun',
+                    'max_jobs': 100,
+                    'access': ['-p ndv2'],
+                    'environs': ['gnu-azhpc'],
+                    'prepare_cmds': ['source /etc/profile.d/modules.sh'],
+                    'features': ['gpu', 'cuda', 'mpi'],
+                    'extras': {'vm_size': 'ndrs_v2', 'gpu_arch': 'a100' }
                 }
             ]
         },
@@ -49,6 +69,7 @@ site_configuration = {
             ]
         }
     ],
+
     'environments': [
         {
             'name': 'builtin',
@@ -82,7 +103,7 @@ site_configuration = {
                 {
                     'type': 'file',
                     'level': 'debug',
-                    'format': '[%(asctime)s] %(levelname)s: %(check_info)s: %(message)s',   # noqa: E501
+                    'format': '[%(asctime)s] %(levelname)s: %(check_info)s: %(message)s', 
                     'append': False
                 }
             ],
