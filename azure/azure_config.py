@@ -12,7 +12,7 @@ site_configuration = {
             'name': 'azure',
             'descr': 'Azure VM',
             'vm_data_file': 'azure_nhc/vm_info/azure_vms_dataset.json',
-            'hostnames': ['*'],
+            'hostnames': [r''],
             'modules_system': 'tmod4',
             'partitions': [
                 {
