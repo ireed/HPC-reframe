@@ -19,7 +19,8 @@ from reframe.core.backends import getlauncher
 class GpuCheckTestBase(rfm.RunOnlyRegressionTest):
    '''Base class for GPU tests'''
 
-   valid_systems = ['*']
+   #valid_systems = ['*']
+   valid_systems=['+cuda']
    valid_prog_environs = ['*']
    #num_tasks = 2
    num_tasks_per_node = 1
