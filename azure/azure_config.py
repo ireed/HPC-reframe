@@ -17,7 +17,7 @@ site_configuration = {
             'partitions': [
                 {
                     'name': 'hbv2',
-                    'descr': 'HB120rs_v2',
+                    'descr': 'hbrs_v2',
                     'scheduler': 'slurm',
                     'launcher': 'srun',
                     'max_jobs': 100,
@@ -43,6 +43,50 @@ site_configuration = {
                 {
                     'name': 'ndv2',
                     'descr': 'ndrs_v2',
+                    'scheduler': 'slurm',
+                    'launcher': 'srun',
+                    'max_jobs': 100,
+                    'access': ['-p ndv2'],
+                    'environs': ['gnu-azhpc'],
+                    'prepare_cmds': ['source /etc/profile.d/modules.sh'],
+                    'features': ['gpu', 'cuda', 'mpi'],
+                    'extras': {'vm_size': 'ndrs_v2', 'gpu_arch': 'a100' }
+                }
+            ]
+        },
+        {
+            'name': 'vm_series',
+            'descr': 'Azure VM series',
+            'vm_data_file': 'azure_nhc/vm_info/azure_vms_dataset.json',
+            'hostnames': [r''],
+            'modules_system': 'tmod4',
+            'partitions': [
+                {
+                    'name': 'hbrs_v2',
+                    'descr': 'hbv2',
+                    'scheduler': 'slurm',
+                    'launcher': 'srun',
+                    'max_jobs': 100,
+                    'access': ['-p hbv2'],
+                    'environs': ['gnu-azhpc'],
+                    'prepare_cmds': ['source /etc/profile.d/modules.sh'],
+                    'features': ['ib', 'mpi'],
+                    'extras': {'vm_size': 'HB120rs_v2', 'gpu_arch': 'a100' }
+                },
+                {
+                    'name': 'ncads_a100_v4',
+                    'scheduler': 'slurm',
+                    'launcher': 'srun',
+                    'max_jobs': 100,
+                    'access': ['-p nca100v4'],
+                    'environs': ['gnu-azhpc'],
+                    'prepare_cmds': ['source /etc/profile.d/modules.sh'],
+                    'features': ['ib', 'gpu', 'cuda', 'mpi'],
+                    'extras': {'vm_size': 'ncads_a100_v4', 'gpu_arch': 'a100' }
+                },
+                {
+                    'name': 'ndrs_v2',
+                    'descr': 'ndv2',
                     'scheduler': 'slurm',
                     'launcher': 'srun',
                     'max_jobs': 100,
