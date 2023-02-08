@@ -26,7 +26,7 @@ site_configuration = {
                     'environs': ['gnu-azhpc'],
                     'prepare_cmds': ['source /etc/profile.d/modules.sh'],
                     'features': ['ib', 'mpi'],
-                    'extras': {'vm_size': 'HB120rs_v2', 'gpu_arch': 'a100' }
+                    'extras': {'vm_size': 'HB120rs_v2' }
                 },
                 {
                     'name': 'hbv3',
@@ -59,7 +59,7 @@ site_configuration = {
                     'access': ['-p nca100v4'],
                     'environs': ['gnu-azhpc'],
                     'prepare_cmds': ['source /etc/profile.d/modules.sh'],
-                    'features': ['ib', 'gpu', 'cuda', 'mpi'],
+                    'features': ['gpu', 'cuda', 'mpi'],
                     'extras': {'vm_size': 'ncads_a100_v4', 'gpu_arch': 'a100' }
                 },
                 {
@@ -72,7 +72,7 @@ site_configuration = {
                     'environs': ['gnu-azhpc'],
                     'prepare_cmds': ['source /etc/profile.d/modules.sh'],
                     'features': ['gpu', 'cuda', 'mpi'],
-                    'extras': {'vm_size': 'ndrs_v2', 'gpu_arch': 'a100' }
+                    'extras': {'vm_size': 'ndrs_v2', 'gpu_arch': 'v100' }
                 }
             ]
         },
@@ -93,7 +93,7 @@ site_configuration = {
                     'environs': ['gnu-azhpc'],
                     'prepare_cmds': ['source /etc/profile.d/modules.sh'],
                     'features': ['ib', 'mpi'],
-                    'extras': {'vm_size': 'HB120rs_v2', 'gpu_arch': 'a100' }
+                    'extras': {'vm_size': 'HB120rs_v2'}
                 },
                 {
                     'name': 'hbrs_v3',
@@ -125,7 +125,7 @@ site_configuration = {
                     'access': ['-p nca100v4'],
                     'environs': ['gnu-azhpc'],
                     'prepare_cmds': ['source /etc/profile.d/modules.sh'],
-                    'features': ['ib', 'gpu', 'cuda', 'mpi'],
+                    'features': ['gpu', 'cuda', 'mpi'],
                     'extras': {'vm_size': 'ncads_a100_v4', 'gpu_arch': 'a100' }
                 },
                 {
@@ -138,7 +138,7 @@ site_configuration = {
                     'environs': ['gnu-azhpc'],
                     'prepare_cmds': ['source /etc/profile.d/modules.sh'],
                     'features': ['gpu', 'cuda', 'mpi'],
-                    'extras': {'vm_size': 'ndrs_v2', 'gpu_arch': 'a100' }
+                    'extras': {'vm_size': 'ndrs_v2', 'gpu_arch': 'v100' }
                 }
             ]
         },
