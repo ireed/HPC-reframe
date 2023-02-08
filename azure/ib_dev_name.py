@@ -42,6 +42,7 @@ class IbNaming(rfm.RunOnlyRegressionTest):
       for i in range(len(data)):
          if i%11 == 0:
             if_names.append(data[i])
+      #search for ib* in list of interface names
       r = re.compile("ib[0-9]")
       ib_names = list(filter(r.match, if_names))
       #print(ib_names)
@@ -53,6 +54,8 @@ class IbNaming(rfm.RunOnlyRegressionTest):
       if 'ib0' not in ib_names:
          self.error_msg="\tERROR: {} has no ib0. IB devices are - {}".format(hostname,ib_names)
          return -1
+      #debug message
+      print("{}: {}".format(hostname,ib_names))
       return 0
 
    @sanity_function
