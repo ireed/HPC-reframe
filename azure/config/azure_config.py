@@ -11,7 +11,7 @@ site_configuration = {
         {
             'name': 'azure',
             'descr': 'Azure VM',
-            'vm_data_file': 'azure_nhc/vm_info/azure_vms_dataset.json',
+            #'vm_data_file': 'azure_nhc/vm_info/azure_vms_dataset.json',
             'hostnames': [r''],
             'modules_system': 'tmod4',
             'partitions': [
@@ -63,6 +63,18 @@ site_configuration = {
                     'extras': {'vm_size': 'ncads_a100_v4', 'gpu_arch': 'a100' }
                 },
                 {
+                    'name': 'ndmv4',
+                    'descr': 'ndamsr_a100_v4',
+                    'scheduler': 'slurm',
+                    'launcher': 'srun',
+                    'max_jobs': 100,
+                    'access': ['-p ndmv4'],
+                    'environs': ['gnu-azhpc'],
+                    'prepare_cmds': ['source /etc/profile.d/modules.sh'],
+                    'features': ['gpu', 'cuda', 'mpi'],
+                    'extras': {'vm_size': 'ndmv4', 'gpu_arch': 'a100' }
+                },
+                {
                     'name': 'ndv2',
                     'descr': 'ndrs_v2',
                     'scheduler': 'slurm',
@@ -79,7 +91,7 @@ site_configuration = {
         {
             'name': 'vm_series',
             'descr': 'Azure VM series',
-            'vm_data_file': 'azure_nhc/vm_info/azure_vms_dataset.json',
+            #'vm_data_file': 'azure_nhc/vm_info/azure_vms_dataset.json',
             'hostnames': [r''],
             'modules_system': 'tmod4',
             'partitions': [
@@ -127,6 +139,18 @@ site_configuration = {
                     'prepare_cmds': ['source /etc/profile.d/modules.sh'],
                     'features': ['gpu', 'cuda', 'mpi'],
                     'extras': {'vm_size': 'ncads_a100_v4', 'gpu_arch': 'a100' }
+                },
+                {
+                    'name': 'ndamsr_a100_v4',
+                    'descr': 'ndmv4',
+                    'scheduler': 'slurm',
+                    'launcher': 'srun',
+                    'max_jobs': 100,
+                    'access': ['-p ndmv4'],
+                    'environs': ['gnu-azhpc'],
+                    'prepare_cmds': ['source /etc/profile.d/modules.sh'],
+                    'features': ['gpu', 'cuda', 'mpi'],
+                    'extras': {'vm_size': 'ndmv4', 'gpu_arch': 'a100' }
                 },
                 {
                     'name': 'ndrs_v2',
